@@ -1,3 +1,3 @@
-# Gazo
+# Sound Hub
 
-Simple photo editing app made for Netlify x Dev.to challenge
+Simple audio upload app made for Netlify x Dev.to challenge
