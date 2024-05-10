@@ -39,8 +39,8 @@ export default async function Home() {
                 <ListItem
                   key={sound.key}
                   soundKey={sound.key}
-                  title={sound?.metadata?.title}
-                  description={sound?.metadata?.description}
+                  title={sound?.metadata?.title as string}
+                  description={sound?.metadata?.description as string}
                 />
               );
             })}
