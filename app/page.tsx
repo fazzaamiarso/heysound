@@ -1,22 +1,23 @@
 import { getStore } from "@netlify/blobs";
 import Link from "next/link";
+import ListItem from "./_components/audio-item";
 
-async function getSounds() {
-  const res = getStore("something");
-  const list = await res.list();
+async function getSoundsMetadata() {
+  const store = getStore("sounds");
+  const blobList = await store.list();
 
-  const sounds = await Promise.all(
-    list.blobs.map(async (blob) => {
-      const data = await res.get(blob.key, { type: "json" });
-      return data;
+  const soundsData = await Promise.all(
+    blobList.blobs.map(async (blob) => {
+      const metadata = await store.getMetadata(blob.key);
+      return { key: blob.key, metadata: metadata?.metadata };
     }),
   );
 
-  return sounds;
+  return soundsData;
 }
 
 export default async function Home() {
-  const sounds = await getSounds();
+  const soundsData = await getSoundsMetadata();
 
   return (
     <>
@@ -32,13 +33,15 @@ export default async function Home() {
         </Link>
         <div>
           <h2 className="text-3xl font-semibold">Sounds</h2>
-          <ul className="space-y-4">
-            {sounds.map((sound) => {
+          <ul>
+            {soundsData.map((sound) => {
               return (
-                <li key={sound.title} className="p-4 ring-1">
-                  <h3 className="font-semibold">{sound.title}</h3>
-                  <p>{sound.description}</p>
-                </li>
+                <ListItem
+                  key={sound.key}
+                  soundKey={sound.key}
+                  title={sound?.metadata?.title}
+                  description={sound?.metadata?.description}
+                />
               );
             })}
           </ul>

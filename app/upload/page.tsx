@@ -5,23 +5,30 @@ import AudioUploader from "./audio-uploader";
 
 async function uploadAudio(formData: FormData) {
   "use server";
-  const data = Object.fromEntries(formData);
 
-  console.log(data);
+  const store = getStore("sounds");
 
-  // const store = getStore("something");
+  const id = String(+new Date());
 
-  // const id = String(+new Date());
+  const audio = formData.get("sound");
 
-  // store.setJSON(id, data);
+  if (!audio) return { error: "Sound not found" };
 
-  // revalidatePath("/");
-  // redirect("/");
+  await store.set(id, new File([audio], Date.now().toString()), {
+    metadata: {
+      title: formData.get("title"),
+      description: formData.get("description"),
+    },
+  });
+
+  revalidatePath("/");
+  redirect("/");
 }
 
 export default function Upload() {
   return (
     <main className="mx-auto w-11/12 py-8">
+      <h2 className="text-3xl font-bold">Upload Your Sound</h2>
       <form action={uploadAudio} className="space-y-8">
         <div className="flex flex-col">
           <label htmlFor="title">Title</label>

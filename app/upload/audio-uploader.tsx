@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, ChangeEventHandler, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export default function AudioUploader() {
   const [audioBlob, setAudioBlob] = useState<string | null>(null);
@@ -21,7 +21,6 @@ export default function AudioUploader() {
 
       audio.onloadeddata = () => {
         const duration = audio.duration;
-        console.log(audio.duration);
         const limit = 60; // Set your desired limit in seconds
 
         if (duration > limit) {
