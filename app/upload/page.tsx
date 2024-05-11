@@ -14,7 +14,7 @@ async function uploadAudio(formData: FormData) {
 
   if (!audio) return { error: "Sound not found" };
 
-  await store.set(id, new File([audio], Date.now().toString()), {
+  await store.set(id, audio, {
     metadata: {
       title: formData.get("title"),
       description: formData.get("description"),
