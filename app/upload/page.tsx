@@ -2,27 +2,40 @@ import { getStore } from "@netlify/blobs";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import AudioUploader from "./audio-uploader";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { nanoid } from "nanoid";
+
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 async function uploadAudio(formData: FormData) {
   "use server";
 
   const store = getStore("sounds");
+  const audio = formData.get("sound") as any; // this is so bad. fix later
+  const category = formData.get("category");
 
-  const id = String(+new Date());
+  const key = `${category}:${nanoid()}`;
 
-  const audio = formData.get("sound");
-
+  // TODO: should do proper form validation
   if (!audio) return { error: "Sound not found" };
 
-  await store.set(id, audio, {
+  await store.set(key, audio, {
     metadata: {
-      title: formData.get("title"),
+      category,
       description: formData.get("description"),
+      type: audio.type,
+      name: audio.name,
     },
   });
 
@@ -35,20 +48,7 @@ export default function Upload() {
     <main className="space-y-8 py-8">
       <Button asChild variant="ghost">
         <Link href="/" className="flex gap-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="h-5 w-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
-            />
-          </svg>
+          <ArrowLeftIcon className="h-5 w-5" />
           BACK
         </Link>
       </Button>
@@ -56,12 +56,21 @@ export default function Upload() {
         <h2 className="text-2xl font-bold">Upload Your Sound</h2>
         <form action={uploadAudio} className="space-y-8">
           <div className="flex flex-col space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input type="text" id="title" name="title" required />
-          </div>
-          <div className="flex flex-col space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" name="description" rows={5} required />
+          </div>
+          <div className="flex flex-col space-y-2 pb-8">
+            <Label>Category</Label>
+            <Select name="category">
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="podcast">Podcast</SelectItem>
+                <SelectItem value="music">Music</SelectItem>
+                <SelectItem value="bites">Bites</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <AudioUploader />
           <Button className="w-full px-4 py-6 font-semibold">

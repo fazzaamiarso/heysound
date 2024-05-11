@@ -1,15 +1,19 @@
 "use client";
 
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useEffect, useRef } from "react";
 
 export default function ListItem({
   soundKey,
-  title,
   description,
 }: {
   soundKey: string;
-  title: string;
   description: string;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -37,12 +41,15 @@ export default function ListItem({
 
   return (
     <li>
-      <Card className="p-4 shadow-sm">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-        <div className="col-span-1 col-start-1">
-          <audio controls ref={audioRef}></audio>
-        </div>
+      <Card className="shadow-sm">
+        <CardHeader>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <audio controls ref={audioRef} className="w-full"></audio>
+          </div>
+        </CardContent>
       </Card>
     </li>
   );
