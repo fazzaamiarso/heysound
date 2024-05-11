@@ -9,7 +9,10 @@ export async function GET(request: Request) {
 
   if (!key) throw new Error("Key not found!");
 
-  const audioBlob = await res.get(key, { type: "stream" });
+  const audioBlob = await res.get(key, {
+    type: "stream",
+    consistency: "strong",
+  });
 
   return new NextResponse(audioBlob);
 }
