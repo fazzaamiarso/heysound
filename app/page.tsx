@@ -1,23 +1,16 @@
-import { getStore } from "@netlify/blobs";
+"use client";
+
 import Link from "next/link";
 import ListItem from "./_components/audio-item";
+import { useEffect, useState } from "react";
+import { getSoundsMetadata } from "./actions";
 
-async function getSoundsMetadata() {
-  const store = getStore("sounds");
-  const blobList = await store.list();
+export default function Home() {
+  const [sounds, setSounds] = useState<any[]>([]);
 
-  const soundsData = await Promise.all(
-    blobList.blobs.map(async (blob) => {
-      const metadata = await store.getMetadata(blob.key);
-      return { key: blob.key, metadata: metadata?.metadata };
-    }),
-  );
-
-  return soundsData;
-}
-
-export default async function Home() {
-  const soundsData = await getSoundsMetadata();
+  useEffect(() => {
+    getSoundsMetadata().then((data) => setSounds(data));
+  }, []);
 
   return (
     <>
@@ -34,7 +27,7 @@ export default async function Home() {
         <div>
           <h2 className="text-3xl font-semibold">Sounds</h2>
           <ul>
-            {soundsData.map((sound) => {
+            {sounds.map((sound) => {
               return (
                 <ListItem
                   key={sound.key}

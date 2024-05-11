@@ -7,11 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "netlify": "netlify",
     "netlify:dev": "netlify dev",
     "netlify:build": "netlify build"
   },
   "dependencies": {
     "@netlify/blobs": "^7.3.0",
+    "@netlify/plugin-nextjs": "^5.2.2",
     "jimp": "^0.22.12",
     "next": "14.2.3",
     "react": "^18",
