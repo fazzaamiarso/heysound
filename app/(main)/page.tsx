@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ListItem from "./audio-item";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getSoundsMetadata } from "./actions";
 import { Button } from "@/components/ui/button";
 import { ArrowUpOnSquareIcon } from "@heroicons/react/24/outline";
@@ -33,15 +33,6 @@ const categories = [
 ];
 
 export default function Home() {
-  const searchParams = useSearchParams();
-  const [sounds, setSounds] = useState<any[]>([]);
-
-  const categoryFilter = searchParams.get("category") ?? "podcast";
-
-  useEffect(() => {
-    getSoundsMetadata(categoryFilter).then((data) => setSounds(data));
-  }, [categoryFilter]);
-
   return (
     <main className="space-y-8 py-4">
       <Button asChild>
@@ -53,7 +44,25 @@ export default function Home() {
           Upload sound
         </Link>
       </Button>
+      <Suspense>
+        <MainContent />
+      </Suspense>
+    </main>
+  );
+}
 
+function MainContent() {
+  const searchParams = useSearchParams();
+  const [sounds, setSounds] = useState<any[]>([]);
+
+  const categoryFilter = searchParams.get("category") ?? "podcast";
+
+  useEffect(() => {
+    getSoundsMetadata(categoryFilter).then((data) => setSounds(data));
+  }, [categoryFilter]);
+
+  return (
+    <section>
       <ul className="mb-4 grid grid-cols-3  text-center">
         {categories.map((category) => {
           return (
@@ -87,6 +96,6 @@ export default function Home() {
           })}
         </ul>
       </div>
-    </main>
+    </section>
   );
 }
