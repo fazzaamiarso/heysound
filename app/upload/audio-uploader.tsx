@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ChangeEvent, useState } from "react";
 
 export default function AudioUploader() {
@@ -38,10 +40,10 @@ export default function AudioUploader() {
   };
 
   return (
-    <>
-      <div className="flex flex-col">
-        <label htmlFor="sound">Your Audio</label>
-        <input
+    <div className="space-y-8 rounded-md p-4 ring-1 ring-neutral-300">
+      <div className="flex flex-col space-y-2">
+        <Label htmlFor="sound">Your Audio</Label>
+        <Input
           type="file"
           id="sound"
           name="sound"
@@ -52,8 +54,9 @@ export default function AudioUploader() {
       </div>
       <div>
         <audio controls>{audioBlob && <source src={audioBlob} />}</audio>
+        <Label>*you can preview your audio here</Label>
         {error && <p>{error}</p>}
       </div>
-    </>
+    </div>
   );
 }
