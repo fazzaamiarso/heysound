@@ -83,18 +83,28 @@ function MainContent() {
           );
         })}
       </ul>
+
       <div>
-        <ul className="space-y-4">
-          {sounds.map((sound) => {
-            return (
-              <ListItem
-                key={sound.key}
-                soundKey={sound.key}
-                description={sound?.metadata?.description as string}
-              />
-            );
-          })}
-        </ul>
+        {sounds.length ? (
+          <ul className="space-y-4">
+            {sounds.map((sound) => {
+              return (
+                <ListItem
+                  key={sound.key}
+                  soundKey={sound.key}
+                  description={sound?.metadata?.description as string}
+                />
+              );
+            })}
+          </ul>
+        ) : (
+          <div className="w-full space-y-4 py-8 text-center text-2xl font-semibold">
+            <div>Be the first one to make a noise!</div>
+            <Button asChild>
+              <Link href="/upload">Make a noise</Link>
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
