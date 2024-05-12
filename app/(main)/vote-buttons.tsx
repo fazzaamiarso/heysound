@@ -4,6 +4,8 @@ import localForage from "localforage";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const STORAGE_KEY = "votes_state";
 
@@ -33,6 +35,8 @@ const postVotes = ({
 };
 
 export default function VoteButton({ blobKey }: { blobKey: string }) {
+  const { toast } = useToast();
+  const [isVoting, setIsVoting] = useState(false);
   const [voteCount, setVoteCount] = useState(0);
   const [voteState, setVoteState] = useState({
     upvotes: [] as string[],
@@ -56,51 +60,77 @@ export default function VoteButton({ blobKey }: { blobKey: string }) {
   }, [blobKey]);
 
   const upvoteHandler = async () => {
-    const newState = {
-      downvotes: hasDownvoted
-        ? voteState.downvotes.filter((key: string) => key !== blobKey)
-        : voteState.downvotes,
-      upvotes: hasUpvoted
-        ? voteState.upvotes.filter((key: string) => key !== blobKey)
-        : [...voteState?.upvotes, blobKey],
-    };
+    if (isVoting) return;
+    setIsVoting(true);
+    try {
+      const newState = {
+        downvotes: hasDownvoted
+          ? voteState.downvotes.filter((key: string) => key !== blobKey)
+          : voteState.downvotes,
+        upvotes: hasUpvoted
+          ? voteState.upvotes.filter((key: string) => key !== blobKey)
+          : [...voteState?.upvotes, blobKey],
+      };
 
-    const action = hasUpvoted
-      ? "upvote-from-up"
-      : hasDownvoted
-        ? "upvote-from-down"
-        : "upvote";
+      const action = hasUpvoted
+        ? "upvote-from-up"
+        : hasDownvoted
+          ? "upvote-from-down"
+          : "upvote";
 
-    await postVotes({ key: blobKey, action });
+      await postVotes({ key: blobKey, action });
 
-    await localForage.setItem(STORAGE_KEY, newState);
+      await localForage.setItem(STORAGE_KEY, newState);
 
-    setVoteState(newState);
-    setVoteCount((prev) => prev + votesAction[action]);
+      setVoteState(newState);
+      setVoteCount((prev) => prev + votesAction[action]);
+    } catch (e: any) {
+      toast({
+        title: "Failed to upvote!",
+        description: e.message,
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   const downvoteHandler = async () => {
-    const newState = {
-      upvotes: hasUpvoted
-        ? voteState.upvotes.filter((key: string) => key !== blobKey)
-        : voteState.upvotes,
-      downvotes: hasDownvoted
-        ? voteState.downvotes.filter((key: string) => key !== blobKey)
-        : [...voteState?.downvotes, blobKey],
-    };
+    if (isVoting) return;
+    setIsVoting(true);
+    try {
+      const newState = {
+        upvotes: hasUpvoted
+          ? voteState.upvotes.filter((key: string) => key !== blobKey)
+          : voteState.upvotes,
+        downvotes: hasDownvoted
+          ? voteState.downvotes.filter((key: string) => key !== blobKey)
+          : [...voteState?.downvotes, blobKey],
+      };
 
-    const action = hasDownvoted
-      ? "downvote-from-down"
-      : hasUpvoted
-        ? "downvote-from-up"
-        : "downvote";
+      const action = hasDownvoted
+        ? "downvote-from-down"
+        : hasUpvoted
+          ? "downvote-from-up"
+          : "downvote";
 
-    await postVotes({ key: blobKey, action });
+      await postVotes({ key: blobKey, action });
 
-    await localForage.setItem(STORAGE_KEY, newState);
+      await localForage.setItem(STORAGE_KEY, newState);
 
-    setVoteState(newState);
-    setVoteCount((prev) => prev + votesAction[action]);
+      setVoteState(newState);
+      setVoteCount((prev) => prev + votesAction[action]);
+    } catch (e: any) {
+      toast({
+        title: "Failed to downvote!",
+        description: e.message,
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsVoting(false);
+    }
   };
   return (
     <div className="flex flex-col items-center pr-6">

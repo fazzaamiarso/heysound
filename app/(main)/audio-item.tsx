@@ -19,7 +19,7 @@ export default function ListItem({
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
-    let audioUrl: any;
+    let audioUrl: string;
 
     const fetchAudio = async () => {
       const res = await fetch(`/audio?key=${blobKey}`, { cache: "no-store" });
