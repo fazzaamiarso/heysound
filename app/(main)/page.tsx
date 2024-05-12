@@ -14,6 +14,32 @@ import {
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+export default function Home() {
+  return (
+    <main className="space-y-8 py-4">
+      <section className="space-y-4 py-4 text-center">
+        <h2 className="text-4xl font-bold">Make some noise on the internet.</h2>
+        <p className="text-neutral-700">
+          Share your best sounds for a maximum of 30 seconds. Whether it&rsquo;s
+          a music, podcast, or whatever bites you have!
+        </p>
+      </section>
+      <Button asChild>
+        <Link
+          href="/upload"
+          className="flex w-full items-center justify-center gap-2 rounded-md bg-indigo-500 py-3 text-center font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
+        >
+          <ArrowUpOnSquareIcon className="h-5 w-5" />
+          Upload sound
+        </Link>
+      </Button>
+      <Suspense>
+        <MainContent />
+      </Suspense>
+    </main>
+  );
+}
+
 const categories = [
   {
     text: "Podcast",
@@ -32,25 +58,6 @@ const categories = [
   },
 ];
 
-export default function Home() {
-  return (
-    <main className="space-y-8 py-4">
-      <Button asChild>
-        <Link
-          href="/upload"
-          className="flex w-full items-center justify-center gap-2 rounded-md bg-indigo-500 py-3 text-center font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
-        >
-          <ArrowUpOnSquareIcon className="h-5 w-5" />
-          Upload sound
-        </Link>
-      </Button>
-      <Suspense>
-        <MainContent />
-      </Suspense>
-    </main>
-  );
-}
-
 function MainContent() {
   const searchParams = useSearchParams();
   const [sounds, setSounds] = useState<any[]>([]);
@@ -58,7 +65,7 @@ function MainContent() {
   const categoryFilter = searchParams.get("category") ?? "podcast";
 
   useEffect(() => {
-    getSoundsMetadata(categoryFilter).then((data) => setSounds(data));
+    getSoundsMetadata(categoryFilter).then(setSounds);
   }, [categoryFilter]);
 
   return (
@@ -93,6 +100,7 @@ function MainContent() {
                   key={sound.key}
                   soundKey={sound.key}
                   description={sound?.metadata?.description as string}
+                  createdAt={sound?.metadata?.createdAt}
                 />
               );
             })}

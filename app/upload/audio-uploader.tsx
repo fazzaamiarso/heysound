@@ -18,7 +18,7 @@ export default function AudioUploader() {
     }
 
     const reader = new FileReader();
-
+    reader.readAsDataURL(selectedFile);
     reader.onload = (e) => {
       const audio = audioRef.current;
       const result = e.target && e.target.result;
@@ -40,7 +40,6 @@ export default function AudioUploader() {
         }
       };
     };
-    reader.readAsDataURL(selectedFile);
   };
 
   return (

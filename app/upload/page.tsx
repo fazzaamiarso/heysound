@@ -28,7 +28,7 @@ async function uploadAudio(formData: FormData) {
   const key = `${category}:${nanoid()}`;
 
   // TODO: should do proper form validation
-  if (!audio) return { error: "Sound not found" };
+  if (!audio) return { error: "Audio not found" };
 
   await store.set(key, audio, {
     metadata: {
@@ -36,6 +36,7 @@ async function uploadAudio(formData: FormData) {
       description: formData.get("description"),
       type: audio.type,
       name: audio.name,
+      createdAt: new Date().toISOString(),
     },
   });
 

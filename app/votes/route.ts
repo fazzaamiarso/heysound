@@ -1,5 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import { NextResponse } from "next/server";
+
 const store = () => getStore("votes");
 
 export async function GET(request: Request) {

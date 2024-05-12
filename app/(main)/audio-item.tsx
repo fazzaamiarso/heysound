@@ -3,7 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import localForage from "localforage";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { cn } from "@/lib/utils";
+
+dayjs.extend(relativeTime);
 
 const STORAGE_KEY = "votes_state";
 
@@ -19,9 +23,11 @@ const votesAction = {
 export default function ListItem({
   soundKey,
   description,
+  createdAt,
 }: {
   soundKey: string;
   description: string;
+  createdAt: string;
 }) {
   const [voteCount, setVoteCount] = useState(0);
   const [voteState, setVoteState] = useState<any>({
@@ -127,8 +133,8 @@ export default function ListItem({
   };
 
   return (
-    <li className="flex w-full gap-8 rounded-md bg-white p-4">
-      <div className="flex flex-col items-center">
+    <li className="flex w-full divide-x-2 rounded-md bg-white p-4">
+      <div className="flex flex-col items-center pr-6">
         <Button
           variant="ghost"
           className={cn("text-xl", hasUpvoted && "saturate-0")}
@@ -145,8 +151,13 @@ export default function ListItem({
           😓
         </Button>
       </div>
-      <div className="basis-full space-y-4">
-        <h3 className="">{description}</h3>
+      <div className="basis-full space-y-8 pl-8">
+        <div className="flex justify-between">
+          <p className="text-lg">{description}</p>
+          <div className="text-sm text-neutral-400">
+            {dayjs(createdAt).fromNow()}
+          </div>
+        </div>
         <div>
           <audio controls ref={audioRef} className="w-full"></audio>
         </div>
