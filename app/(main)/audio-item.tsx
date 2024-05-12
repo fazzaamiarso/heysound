@@ -7,6 +7,15 @@ import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "votes_state";
 
+const votesAction = {
+  upvote: 1,
+  downvote: -1,
+  "upvote-from-down": +2,
+  "upvote-from-up": -1,
+  "downvote-from-up": -2,
+  "downvote-from-down": +1,
+} as const;
+
 export default function ListItem({
   soundKey,
   description,
@@ -14,6 +23,7 @@ export default function ListItem({
   soundKey: string;
   description: string;
 }) {
+  const [voteCount, setVoteCount] = useState(0);
   const [voteState, setVoteState] = useState<any>({
     upvotes: [],
     downvotes: [],
@@ -52,6 +62,12 @@ export default function ListItem({
     });
   }, []);
 
+  useEffect(() => {
+    fetch(`/votes?key=${soundKey}`)
+      .then((res) => res.json())
+      .then((data) => setVoteCount(data.count));
+  }, [soundKey]);
+
   const upvoteHandler = async () => {
     const newState = {
       downvotes: hasDownvoted
@@ -62,8 +78,23 @@ export default function ListItem({
         : [...voteState?.upvotes, soundKey],
     };
 
+    const action = hasUpvoted
+      ? "upvote-from-up"
+      : hasDownvoted
+        ? "upvote-from-down"
+        : "upvote";
+
+    await fetch("/votes", {
+      method: "POST",
+      body: JSON.stringify({
+        action,
+        key: soundKey,
+      }),
+    });
+
     await localForage.setItem(STORAGE_KEY, newState);
     setVoteState(newState);
+    setVoteCount((prev) => prev + votesAction[action]);
   };
 
   const downvoteHandler = async () => {
@@ -76,8 +107,23 @@ export default function ListItem({
         ? voteState.downvotes.filter((key: string) => key !== soundKey)
         : [...voteState?.downvotes, soundKey],
     };
+
+    const action = hasDownvoted
+      ? "downvote-from-down"
+      : hasUpvoted
+        ? "downvote-from-up"
+        : "downvote";
+    await fetch("/votes", {
+      method: "POST",
+      body: JSON.stringify({
+        action,
+        key: soundKey,
+      }),
+    });
+
     await localForage.setItem(STORAGE_KEY, newState);
     setVoteState(newState);
+    setVoteCount((prev) => prev + votesAction[action]);
   };
 
   return (
@@ -90,7 +136,7 @@ export default function ListItem({
         >
           🔥
         </Button>
-        <div>0</div>
+        <div>{voteCount}</div>
         <Button
           variant="ghost"
           className={cn("text-xl", hasDownvoted && "saturate-0")}
