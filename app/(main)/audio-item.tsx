@@ -22,7 +22,7 @@ export default function ListItem({
     let audioUrl: string;
 
     const fetchAudio = async () => {
-      const res = await fetch(`/audio?key=${blobKey}`, { cache: "no-store" });
+      const res = await fetch(`/audio?key=${blobKey}`);
 
       const blob = await res.blob();
 
