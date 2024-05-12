@@ -98,7 +98,7 @@ function MainContent() {
               return (
                 <ListItem
                   key={sound.key}
-                  soundKey={sound.key}
+                  blobKey={sound.key}
                   description={sound?.metadata?.description as string}
                   createdAt={sound?.metadata?.createdAt}
                 />

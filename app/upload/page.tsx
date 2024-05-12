@@ -1,9 +1,7 @@
-import { getStore } from "@netlify/blobs";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+"use client";
+
 import AudioUploader from "./audio-uploader";
 import Link from "next/link";
-import { nanoid } from "nanoid";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,34 +15,12 @@ import {
 } from "@/components/ui/select";
 
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-
-async function uploadAudio(formData: FormData) {
-  "use server";
-
-  const store = getStore("sounds");
-  const audio = formData.get("sound") as any; // this is so bad. fix later
-  const category = formData.get("category");
-
-  const key = `${category}:${nanoid()}`;
-
-  // TODO: should do proper form validation
-  if (!audio) return { error: "Audio not found" };
-
-  await store.set(key, audio, {
-    metadata: {
-      category,
-      description: formData.get("description"),
-      type: audio.type,
-      name: audio.name,
-      createdAt: new Date().toISOString(),
-    },
-  });
-
-  revalidatePath("/");
-  redirect("/");
-}
+import { useFormStatus } from "react-dom";
+import { uploadAudio } from "./actions";
 
 export default function Upload() {
+  const { pending } = useFormStatus();
+
   return (
     <main className="space-y-8 py-8">
       <Button asChild variant="ghost">
@@ -74,8 +50,11 @@ export default function Upload() {
             </Select>
           </div>
           <AudioUploader />
-          <Button className="w-full px-4 py-6 font-semibold">
-            UPLOAD SOUND
+          <Button
+            className="w-full px-4 py-6 font-semibold disabled:bg-neutral-600"
+            disabled={pending}
+          >
+            {pending ? "UPLOADING..." : "UPLOAD SOUND"}
           </Button>
         </form>
       </div>
