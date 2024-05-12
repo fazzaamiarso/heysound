@@ -14,5 +14,10 @@ export async function GET(request: Request) {
     consistency: "strong",
   });
 
-  return new NextResponse(audioBlob);
+  return new NextResponse(audioBlob, {
+    headers: {
+      "Netlify-CDN-Cache-Control": "public, max-age=604800, immutable",
+      "Netlify-Vary": "query",
+    },
+  });
 }
