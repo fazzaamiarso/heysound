@@ -23,7 +23,9 @@ export default function Home() {
           Share your best sounds for a maximum of 30 seconds. Whether it&rsquo;s
           a music, podcast, or whatever bites you have!
         </p>
-        <span className="text-xs">ps: voting feature is still buggy 🙏</span>
+        <span className="text-xs text-green-600">
+          ps: voting feature might give you unexpected result 🙏
+        </span>
       </section>
       <Button asChild>
         <Link

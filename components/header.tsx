@@ -8,7 +8,7 @@ export default function Header() {
           <a
             href="https://github.com/fazzaamiarso"
             target="_blank"
-            className="text-orange-600 underline"
+            className="text-green-600 underline"
           >
             Fazza Razaq Amiarso.
           </a>
@@ -19,7 +19,7 @@ export default function Header() {
           <a
             href="https://50hacks.co"
             target="_blank"
-            className="text-orange-600 underline"
+            className="text-green-600 underline"
           >
             50hacks.co
           </a>
